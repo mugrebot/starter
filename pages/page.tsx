@@ -5,7 +5,8 @@ import { sql } from '@vercel/postgres'
 export default function MessagesPage() {
   const { data: session } = useSession()
   const [message, setMessage] = useState('')
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState<Record<string, unknown>[]>([])
+
 
   // Fetch messages from the database when the component mounts
   useEffect(() => {
@@ -16,13 +17,13 @@ export default function MessagesPage() {
     fetchMessages()
   }, [])
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault()
 
     // Insert the new message into the database
     const { rows } = await sql`
       INSERT INTO messages (text, user_id)
-      VALUES (${message}, ${session.user.id})
+      VALUES (${message}, ${session?.user?.name})
       RETURNING *
     `
 
@@ -46,9 +47,12 @@ export default function MessagesPage() {
       </form>
 
       <ul>
-        {messages.map((message) => (
-          <li key={message.id}>{message.text}</li>
-        ))}
+      {messages.map((message, user) => (
+  <li key={user}>
+    <p>{user}</p>
+  </li>
+))}
+
       </ul>
     </div>
   )
