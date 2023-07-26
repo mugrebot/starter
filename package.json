@@ -18,6 +18,7 @@
     "Lluis Agusti <hi@llu.lu>"
   ],
   "dependencies": {
+    "@vercel/edge-config": "^0.2.1",
     "@vercel/postgres": "^0.4.1",
     "axios": "^1.4.0",
     "next": "latest",
