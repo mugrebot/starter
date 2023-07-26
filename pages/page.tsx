@@ -14,9 +14,10 @@ export default function MessagesPage() {
       // Fetch messages from your database here
       // setMessages(rows)
       //
-      //const beans = await createClient(https://edge-config.vercel.com/ecfg_4d3w9ewgw2tovdi4jdnc7ejig7nz?token=e7ec9599-90dd-4767-8246-2733e3357d49");
+      const beans = await createClient(`${process.env.EDGE_CONFIG}`);
 
-      const greetingValue = await get('user1Name');
+
+      const greetingValue = await beans.get('user1Name');
       setGreeting(greetingValue);
     }
     fetchMessages()
