@@ -33,7 +33,6 @@ export default function MessagesPage() {
 
   return (
     <div>
-      <h1>{greeting}</h1>
       <form onSubmit={handleSubmit}>
         <textarea
           value={message}
@@ -45,7 +44,7 @@ export default function MessagesPage() {
       <ul>
         {messages.map((message, index) => (
           <li key={index}>
-            <p>{message.text}</p>
+            <p>{index}</p>
           </li>
         ))}
       </ul>
