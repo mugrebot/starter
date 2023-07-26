@@ -1,59 +1,24 @@
 import { useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
-import { sql } from '@vercel/postgres'
+import { db } from '@vercel/postgres'
 
-export default function MessagesPage() {
-  const { data: session } = useSession()
-  const [message, setMessage] = useState('')
-  const [messages, setMessages] = useState<Record<string, unknown>[]>([])
+export default function Home() {
+  const { data: session, status } = useSession()
+  const loading = status === 'loading'
 
-
-  // Fetch messages from the database when the component mounts
   useEffect(() => {
-    const fetchMessages = async () => {
-      const { rows } = await sql`SELECT * FROM messages ORDER BY created_at DESC`
-      setMessages(rows)
+    const connectToDb = async () => {
+      const client = await db.connect()
+      await client.sql`SELECT 1`
+      console.log('Connected to the database')
     }
-    fetchMessages()
+
+    connectToDb()
   }, [])
-
-  const handleSubmit = async (event: { preventDefault: () => void }) => {
-    event.preventDefault()
-
-    // Insert the new message into the database
-    const { rows } = await sql`
-      INSERT INTO messages (text, user_id)
-      VALUES (${message}, ${session?.user?.name})
-      RETURNING *
-    `
-
-    // Clear the message input and add the new message to the beginning of the list
-    setMessage('')
-    setMessages((prevMessages) => [rows[0], ...prevMessages])
-  }
-
-  if (!session) {
-    return <p>You must be signed in to post a message.</p>
-  }
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <textarea
-          value={message}
-          onChange={(event) => setMessage(event.target.value)}
-        />
-        <button type="submit">Post Message</button>
-      </form>
-
-      <ul>
-      {messages.map((message, user) => (
-  <li key={user}>
-    <p>{user}</p>
-  </li>
-))}
-
-      </ul>
+      <h1>Home Page</h1>
     </div>
   )
 }
