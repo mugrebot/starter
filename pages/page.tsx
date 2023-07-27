@@ -1,54 +1,27 @@
-import { useSession } from 'next-auth/react'
-import { useState, useEffect } from 'react'
-import { get, EdgeConfigValue, EdgeConfigClient, createClient} from '@vercel/edge-config';
+import { useEffect, useState } from 'react';
 
-export default function MessagesPage() {
-  const { data: session } = useSession()
-  const [message, setMessage] = useState('')
-  const [messages, setMessages] = useState<Record<string, unknown>[]>([])
-  const [greeting, setGreeting] = useState<EdgeConfigValue | undefined>('')
+export default function Page() {
+  const [data, setData] = useState(null);
 
-  // Fetch messages from the database when the component mounts
   useEffect(() => {
-    const fetchMessages = async () => {
-      // Fetch messages from your database here
-      // setMessages(rows)
-      //
-      const beans = await createClient(`${process.env.EDGE_CONFIG}`);
+    const fetchData = async () => {
+      const res = await fetch('/api/welcome');
+      const json = await res.json();
+      setData(json);
+    };
 
+    fetchData();
+  }, []);
 
-      const greetingValue = await beans.get('user1Name');
-      setGreeting(greetingValue);
-    }
-    fetchMessages()
-  }, [])
-
-  const handleSubmit = async (event: { preventDefault: () => void }) => {
-    event.preventDefault()
-
-    // Insert the new message into the database
-    // Clear the message input and add the new message to the beginning of the list
-    setMessage('')
-    // setMessages((prevMessages) => [rows[0], ...prevMessages])
-  }
+  console.log(data, "yoyoy");
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <textarea
-          value={message}
-          onChange={(event) => setMessage(event.target.value)}
-        />
-        <button type="submit">Post Message</button>
-      </form>
+      {data?.user == true && "its true"}
+      {data?.user == false && <h1>{data?.user} False </h1>}
+      <h1>{data?.user}</h1>
+      <h1>{data?.user}</h1>
 
-      <ul>
-        {messages.map((message, index) => (
-          <li key={index}>
-            <p>{index}</p>
-          </li>
-        ))}
-      </ul>
     </div>
-  )
+  );
 }
